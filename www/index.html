@@ -1,0 +1,270 @@
+<!DOCTYPE HTML>
+
+<html class="no-js" lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title>Again backbone</title>
+
+	<link href="assets/css/bootstrap.css" rel="stylesheet">
+  <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <style type="text/css">
+
+        ::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        ::selection {
+            background: #FF5E99;
+            color: #222;
+            text-shadow: none;
+        }
+
+        .tpad {
+            background: #fff;
+            margin: 50px 0px 50px 0px;
+            padding: 30px;
+        }
+
+
+        div.abPanel span.true {
+    color: green;
+}
+div.abPanel span.false {
+  color:red;
+}
+  
+
+
+    </style>
+
+	<script type="text/javascript" src="assets/js/jquery.js"></script>
+	<script type="text/javascript" src="assets/js/underscore.js"></script>
+	<script type="text/javascript" src="assets/js/backbone.js"></script>
+</head>
+
+<body>
+
+		<!-- Navbar
+    ================================================== -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="index.html">Project</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active">
+                <a href="index.html">Home</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- end of nav bar -->
+
+    <div class="container">
+      <div class="row tpad">
+          <div class="span11">
+                  <div class="page-header">
+                    <h1>Address Book</h1>
+                       <a class="btn btn-primary" href="#add">Add new</a> &nbsp;
+                       <a class="btn btn-info" href="#list" >Show all</a>&nbsp;
+                       <a class="btn btn-inverse" href="#search">Search</a>&nbsp;
+
+
+                  </div>
+
+                  <div class='cell abPanel'></div>
+
+                  <br>
+
+
+                  <!-- add contact view  -->
+
+                  <script type="text/template" id="addContactTemplate">
+                        <h2><%= $.isEmptyObject(contact)? 'Add':'Edit'%> New Contact </h2>
+                              
+
+                              <form id="addContactForm" class="form-horizontal">
+
+        
+                                <div class="control-group">
+                                  <label class="control-label" for="inputName">Name</label>
+                                  <div class="controls">
+                                    <input 
+                                        type="text" 
+                                        value="<%= !$.isEmptyObject(contact) ? contact.full_name : '' %>"
+                                        name="username" 
+                                        id="inputName"
+                                        placeholder="Name">
+
+                                         <span class='false full_name_error'></span><br />
+                                  </div>
+
+                                </div>
+
+
+                                <div class="control-group">
+                                  <label class="control-label" for="inputEmail">Email</label>
+                                  <div class="controls">
+                                    <input
+                                       type="email" 
+                                       value="<%= !$.isEmptyObject(contact)?contact.email : '' %>"
+                                       name="email" 
+                                       id="inputEmail" 
+                                       placeholder="Email">
+
+                                        <span class='false email_error'></span><br />
+                                  </div>
+                                </div>
+
+                                <div class="control-group">
+                                  <label class="control-label" for="inputPhone">Phone</label>
+                                  <div class="controls">
+                                    <input  
+                                        type="text"
+                                        value="<%= !$.isEmptyObject(contact) ? contact.phone : '' %>" 
+                                        name="phone" 
+                                        id="inputPhone" 
+                                        placeholder="Phone">
+
+                                         <span class='false phone_error'></span><br />
+                                  </div>
+                                </div>
+
+
+                                 <div class="control-group">
+                                  <label class="control-label" for="inputAddress">Address</label>
+                                  <div class="controls">
+                                    <textarea 
+                                        name="address" 
+                                        id="inputAddress" row="10" ><%= !$.isEmptyObject(contact) ? contact.address :'' %></textarea>
+                                  </div>
+                                </div>
+
+                                <input 
+                                    type='hidden' 
+                                    id='id' 
+                                    class='input' 
+                                    value="<%= !$.isEmptyObject(contact) ? contact.id : '' %>"/>
+
+
+
+
+                                <div class="control-group">
+                                  <div class="controls">
+                                      <input 
+                                          type="submit" 
+                                          value='<%= $.isEmptyObject(contact) ? 'Save':'Update'%> Contact Details' 
+                                          class="btn btn-primary">
+                                  </div>
+                                </div>
+
+                                <span class="success"></span>
+
+                          </form>
+
+                  </script>
+
+
+
+                  <!-- search view  -->
+
+              <script type="text/template" id="searchContactTemplate">
+                  <h2>Search</h2>
+                          
+                          <form id="searchForm" class="form-horizontal">
+                            
+                            <div class="control-group">
+                              <label class="control-label" for="inName">Name</label>
+                              <div class="controls">
+                                <input type="text" id="inName" placeholder="Name">
+                              </div>
+                            </div>        
+                            <input type="submit" class="btn btn-primary" value="Search">
+                          </form>
+
+                          <div id='gridd'></div>
+
+              </script>
+
+
+
+
+
+              <!-- list view -->
+
+              <script type="text/template" id="listContactTemplate">
+                  <h2> ALl Contact </h2>
+
+                      <table id="contactTable" class="table table-striped">
+                              <thead>
+                                <tr>
+                                  <th>#</th>
+                                  <th>Name</th>
+                                  <th>Email</th>
+                                  <th>Phone</th>
+                                  <th>Address</th>
+                                  <th>Action</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+
+                              <% if( $.isEmptyObject(contacts) ){ %>
+                                  <tr><td colspan='5'>No record found</td></tr>
+
+                              <% } else { 
+                                 $.each(contacts,function(){  
+                               %>
+
+                                <tr data-id=<%= this.id %>>
+                                    <td> </td>
+                                  <td><%= this.full_name %></td>
+                                  <td> <%= this.email %></td>
+                                  <td><%= this.phone %></td>
+                                  <td><%= this.address %></td>
+                                  <td align="center">
+                                    <a class="edit">Edit</a>|<a class="delete" >Delete</a>
+                                  </td>
+
+                                </tr>   
+                                <% })
+                              } %>
+
+
+                              </tbody>
+                    </table>
+
+
+              </script>                 
+          </div>
+      </div>
+      
+
+    </div>
+
+
+	<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="assets/js/app.js"></script>
+
+
+
+   
+
+
+
+
+
+	
+
+
+	
+</body>
+</html>
